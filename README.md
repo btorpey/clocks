@@ -24,4 +24,5 @@ Some quick notes on the code:
 
 
 &copy; Copyright 2014 by Bill Torpey.   All Rights Reserved.
+
 This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/deed.en_US">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
