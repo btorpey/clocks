@@ -3,20 +3,6 @@
 
 #define ONE_BILLION  1000000000L
 
-/******************************************************************
-  Posix implementation.
-
-  gcc -o libsystime.so -shared -Wl,-soname,systime.so \
-      -I$JAVA_HOME/include -I$JAVA_HOME/include/linux \
-      -lc -fPIC -lrt SysTime.c
-
-******************************************************************/
-
-/*
- * Class:     SysTime
- * Method:    clock_gettime
- * Signature: ()J
- */
 JNIEXPORT jlong JNICALL Java_SysTime_clocktime(JNIEnv *env, jclass jobj)
 {
   struct timespec tv;
