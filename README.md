@@ -1,4 +1,4 @@
-Code to test various clocks under Linux
+Code to test various clocks under Linux (and OSX)
 =======================================
 
 Some quick notes on the code:

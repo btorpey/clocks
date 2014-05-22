@@ -1,13 +1,21 @@
 #include "SysTime.h"
+#include <sys/time.h>
 #include <time.h>
 
 #define ONE_BILLION  1000000000L
 
+
 JNIEXPORT jlong JNICALL Java_SysTime_clocktime(JNIEnv *env, jclass jobj)
 {
-  struct timespec tv;
-  (void)clock_gettime(CLOCK_REALTIME,&tv);
-  return (((jlong)tv.tv_sec) * ONE_BILLION) + ((jlong)tv.tv_nsec);
+#if _POSIX_TIMERS > 0   
+  struct timespec ts;
+  clock_gettime(CLOCK_REALTIME, &ts);
+  return (((jlong)ts.tv_sec) * ONE_BILLION) + ((jlong)ts.tv_nsec);
+#else
+   struct timeval tv;
+   gettimeofday(&tv, NULL);
+   return (((jlong)tv.tv_sec) * ONE_BILLION) + ((jlong)tv.tv_usec*1000);
+#endif
 }
 
 

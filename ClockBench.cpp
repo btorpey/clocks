@@ -11,7 +11,7 @@ using namespace std;
 #define ONE_BILLION  1000000000000L
 
 double CPU_FREQ = 1;
-const int BUCKETS = 201;         // how many samples to collect per iteration
+const int BUCKETS = 256;         // how many samples to collect per iteration
 const int ITERS = 100;           // how many iterations to run
 
 inline unsigned long long cpuid_rdtsc() {
@@ -93,8 +93,15 @@ struct deltaT   {
    {
       printf("%7.2f\t%7.2f\n", sum, sum2);
       printf("\n");
-      for (int i = 0 ; i < count; ++i )
-         printf("[%d]=%ld\t", i, x[i]);
+      for (int i = 0 ; i < count; ++i ) {
+         if ((i % 8) == 0)
+            printf("\n");
+         else
+            printf("\t");
+         printf("[%03d]=%ld", i, x[i]);
+      }
+      
+      printf("\n");
    } 
 
    vector<long> x;
@@ -123,7 +130,7 @@ int main(int argc, char** argv)
    printf("%25s\t", "Method");
    printf("%s\t%7s\t%7s\t%7s\t%7s\t%7s\n", "samples", "min", "max", "avg", "median", "stdev");
    
-   
+#if _POSIX_TIMERS > 0   
    #ifdef CLOCK_REALTIME
    do_clock(CLOCK_REALTIME);
    #endif
@@ -147,12 +154,12 @@ int main(int argc, char** argv)
    #ifdef CLOCK_MONOTONIC_COARSE
    do_clock(CLOCK_MONOTONIC_COARSE);
    #endif
-
+#endif
 
 
    {
       for (int i = 0; i < ITERS * BUCKETS; ++i) { 
-         int n = i % (BUCKETS); 
+         int n = i & 0x00000000000000ff; 
          timestamp[n] = cpuid_rdtsc();
       }
       for (int i = 0; i < BUCKETS; ++i) { 
@@ -161,13 +168,14 @@ int main(int argc, char** argv)
       deltaT x(timestamp); 
       printf("%25s\t", "cpuid+rdtsc");
       x.print(); 
+      //x.dump();
    }
 
    // will throw SIGILL on machine w/o rdtscp instruction
    #ifdef RDTSCP
    {
       for (int i = 0; i < ITERS * BUCKETS; ++i) { 
-         int n = i % (BUCKETS); 
+         int n = i & 0x00000000000000ff; 
          timestamp[n] = rdtscp();
       }
       for (int i = 0; i < BUCKETS; ++i) { 
@@ -182,7 +190,7 @@ int main(int argc, char** argv)
    
    {
       for (int i = 0; i < ITERS * BUCKETS; ++i) { 
-         int n = i % (BUCKETS); 
+         int n = i & 0x00000000000000ff; 
          timestamp[n] = rdtsc();
       }
       for (int i = 0; i < BUCKETS; ++i) { 
@@ -191,6 +199,7 @@ int main(int argc, char** argv)
       deltaT x(timestamp); 
       printf("%25s\t", "rdtsc");
       x.print(); 
+      //x.dump();
    }
 
    printf("Using CPU frequency = %f\n", CPU_FREQ);
