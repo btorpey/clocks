@@ -6,7 +6,7 @@
 #
 
 # Either set JAVA_HOME before running, or change to point to jdk installation
-export JAVA_HOME=/Library/java/JavaVirtualMachines/jdk1.7.0_11.jdk/Contents/Home
+#export JAVA_HOME=/Library/java/JavaVirtualMachines/jdk1.7.0_11.jdk/Contents/Home
 if [ "$JAVA_HOME" == "" ] ; then
   export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.45.x86_64
 fi

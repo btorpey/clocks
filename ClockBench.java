@@ -2,8 +2,8 @@ class ClockBench
 {
    
    static double CPU_FREQ = 1;
-   static int ITERS=100;             // how many iterations to run
-   static final int BUCKETS=201;    // how many samples to collect per iteration
+   static final int ITERS=1000;           // how many iterations to run
+   static final int BUCKETS=256;          // how many samples to collect per iteration
    
    
    public static class deltaT   {
@@ -56,7 +56,7 @@ class ClockBench
    };
 
    
-   public static volatile long[] timestamp = new long[BUCKETS];
+   public static long[] timestamp = new long[BUCKETS];
    
    public static void main(String[] args)
    {
@@ -67,7 +67,7 @@ class ClockBench
       System.out.printf("%25s\t%7s\t%7s\t%7s\t%7s\t%7s\t%7s\n", "Method", "samples","min","max","avg","median","stdev");
       {
          for (int i = 0; i < (ITERS * BUCKETS); ++i) {
-            timestamp[i % BUCKETS] = System.nanoTime();
+            timestamp[i & 0xff] = System.nanoTime();
          }    
          System.out.printf("%25s\t", "System.nanoTime");
          deltaT x = new deltaT(timestamp);
@@ -77,7 +77,7 @@ class ClockBench
       
       {
          for (int i = 0; i < (ITERS * BUCKETS); ++i) {
-            timestamp[i % BUCKETS]  = SysTime.clocktime();
+            timestamp[i & 0xff]  = SysTime.clocktime();
          }    
          System.out.printf("%25s\t", "CLOCK_REALTIME");
          deltaT x = new deltaT(timestamp);
@@ -87,7 +87,7 @@ class ClockBench
       
       {
          for (int i = 0; i < (ITERS * BUCKETS); ++i) {
-            timestamp[i % BUCKETS]  = SysTime.cpuidrdtsc();
+            timestamp[i & 0xff]  = SysTime.cpuidrdtsc();
          }    
          for (int i = 0; i < BUCKETS; ++i) { 
             timestamp[i] = (long) ((double) timestamp[i] / CPU_FREQ);
@@ -101,7 +101,7 @@ class ClockBench
       if (System.getProperty("RDTSCP") != null) 
       {
          for (int i = 0; i < (ITERS * BUCKETS); ++i) {
-            timestamp[i % BUCKETS]  = SysTime.rdtscp();
+            timestamp[i & 0xff]  = SysTime.rdtscp();
          }    
          for (int i = 0; i < BUCKETS; ++i) { 
             timestamp[i] = (long) ((double) timestamp[i] / CPU_FREQ);
@@ -114,7 +114,7 @@ class ClockBench
 
       {
          for (int i = 0; i < (ITERS * BUCKETS); ++i) {
-            timestamp[i % BUCKETS]  = SysTime.rdtsc();
+            timestamp[i & 0xff]  = SysTime.rdtsc();
          }    
          for (int i = 0; i < BUCKETS; ++i) { 
             timestamp[i] = (long) ((double) timestamp[i] / CPU_FREQ);

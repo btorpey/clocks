@@ -159,7 +159,7 @@ int main(int argc, char** argv)
 
    {
       for (int i = 0; i < ITERS * BUCKETS; ++i) { 
-         int n = i & 0x00000000000000ff; 
+         int n = i & 0xff; 
          timestamp[n] = cpuid_rdtsc();
       }
       for (int i = 0; i < BUCKETS; ++i) { 
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
    #ifdef RDTSCP
    {
       for (int i = 0; i < ITERS * BUCKETS; ++i) { 
-         int n = i & 0x00000000000000ff; 
+         int n = i & 0xff; 
          timestamp[n] = rdtscp();
       }
       for (int i = 0; i < BUCKETS; ++i) { 
@@ -190,7 +190,7 @@ int main(int argc, char** argv)
    
    {
       for (int i = 0; i < ITERS * BUCKETS; ++i) { 
-         int n = i & 0x00000000000000ff; 
+         int n = i & 0xff; 
          timestamp[n] = rdtsc();
       }
       for (int i = 0; i < BUCKETS; ++i) { 
