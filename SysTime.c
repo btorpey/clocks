@@ -1,4 +1,5 @@
 #include "SysTime.h"
+#include <unistd.h>
 #include <sys/time.h>
 #include <time.h>
 
@@ -12,6 +13,7 @@ JNIEXPORT jlong JNICALL Java_SysTime_clocktime(JNIEnv *env, jclass jobj)
   clock_gettime(CLOCK_REALTIME, &ts);
   return (((jlong)ts.tv_sec) * ONE_BILLION) + ((jlong)ts.tv_nsec);
 #else
+   #warning "_POSIX_TIMERS not defined, using gettimeofday"
    struct timeval tv;
    gettimeofday(&tv, NULL);
    return (((jlong)tv.tv_sec) * ONE_BILLION) + ((jlong)tv.tv_usec*1000);
