@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 #
 # Copyright 2014 by Bill Torpey. All Rights Reserved.
 # This work is licensed under a Creative Commons Attribution-NonCommercial-NoDerivs 3.0 United States License. 
@@ -36,8 +36,8 @@ gcc clocks.c ${LIBRT} && ./a.out
 # benchmark clocks
 # cpp side
 echo;echo "ClockBench.cpp"
-  g++ -O3 -ggdb ${LIBRT} ${RDTSCP} ClockBench.cpp && ${TASKSET} ./a.out $*
-  
+  g++ -march=native -O3 -ggdb ${LIBRT} ${RDTSCP} ClockBench.cpp && ${TASKSET} ./a.out $*
+
 # java side
 rm -f SysTime.h
 rm -f SysTime.class
