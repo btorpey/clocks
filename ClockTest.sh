@@ -1,12 +1,12 @@
-#!/bin/bash 
+#!/bin/bash
 #
 # Copyright 2014 by Bill Torpey. All Rights Reserved.
-# This work is licensed under a Creative Commons Attribution-NonCommercial-NoDerivs 3.0 United States License. 
+# This work is licensed under a Creative Commons Attribution-NonCommercial-NoDerivs 3.0 United States License.
 # http://creativecommons.org/licenses/by-nc-nd/3.0/us/deed.en
 #
 
 # Either set JAVA_HOME before running, or change to point to jdk installation
-#export JAVA_HOME=/Library/java/JavaVirtualMachines/jdk1.7.0_11.jdk/Contents/Home
+export JAVA_HOME=/Library/java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home
 if [ "$JAVA_HOME" == "" ] ; then
   export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.45.x86_64
 fi
@@ -22,7 +22,7 @@ if [[ ${OSTYPE} == *linux* ]]; then
     RDTSCP=" -DRDTSCP=1 "
   fi
 elif [[ ${OSTYPE} == *darwin* ]]; then
-  # assume RDTSCP -- not sure what else to do 
+  # assume RDTSCP -- not sure what else to do
   RDTSCP=" -DRDTSCP=1 "
   JAVAINC=darwin
   SOEXT=jnilib
@@ -31,13 +31,13 @@ fi
 
 ## show available clocks
 echo;echo "clocks.c"
-gcc clocks.c ${LIBRT} && ./a.out
+gcc -o clocks clocks.c ${LIBRT} && ./clocks
 
 # benchmark clocks
 # cpp side
 echo;echo "ClockBench.cpp"
-  g++ -O3 -ggdb ${LIBRT} ${RDTSCP} ClockBench.cpp && ${TASKSET} ./a.out $*
-  
+g++ -O3 -ggdb ${LIBRT} ${RDTSCP} -o ClockBench ClockBench.cpp && ${TASKSET} ./ClockBench $*
+
 # java side
 rm -f SysTime.h
 rm -f SysTime.class
