@@ -12,7 +12,7 @@
 using namespace std;
 
 
-#define ONE_BILLION  1000000000000L
+#define ONE_BILLION  1000000000L
 
 double CPU_FREQ = 1;
 const int BUCKETS = 256;         // how many samples to collect per iteration
