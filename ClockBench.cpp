@@ -12,11 +12,12 @@
 using namespace std;
 
 
-#define ONE_BILLION  1000000000000L
+#define ONE_BILLION  1000000000L
 
-double CPU_FREQ = 1;
+// NOTE: if you change this value you prob also need to adjust later code that does "& 0xff" to use modulo arithmetic instead 
 const int BUCKETS = 256;         // how many samples to collect per iteration
 const int ITERS = 100;           // how many iterations to run
+double CPU_FREQ = 1;
 
 inline unsigned long long cpuid_rdtsc() {
   unsigned int lo, hi;
