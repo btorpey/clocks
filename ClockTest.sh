@@ -5,13 +5,6 @@
 # http://creativecommons.org/licenses/by-nc-nd/3.0/us/deed.en
 #
 
-# Either set JAVA_HOME before running, or change to point to jdk installation
-export JAVA_HOME=/Library/java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home
-if [ "$JAVA_HOME" == "" ] ; then
-  export JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.45.x86_64
-fi
-export PATH=$JAVA_HOME/bin:$PATH
-
 if [[ ${OSTYPE} == *linux* ]]; then
   LIBRT="-lrt"
   TASKSET="taskset -c 1"
@@ -38,15 +31,21 @@ gcc -o clocks clocks.c ${LIBRT} && ./clocks
 echo;echo "ClockBench.cpp"
 g++ -O3 -ggdb ${LIBRT} ${RDTSCP} -o ClockBench ClockBench.cpp && ${TASKSET} ./ClockBench $*
 
-# java side
-rm -f SysTime.h
-rm -f SysTime.class
-rm -f ClockBench.class
-rm -f libsystime.${SOEXT}
-javac -classpath . SysTime.java
-javah -classpath . SysTime
-javac -classpath . ClockBench.java
-#gcc -O3 -o libsystime.so -shared -Wl,-soname,systime.so -I${JAVA_HOME}/include -I${JAVA_HOME}/include/${JAVAINC} -lc -fPIC ${LIBRT} SysTime.c
-gcc -O3 -o libsystime.${SOEXT} -shared -I${JAVA_HOME}/include -I${JAVA_HOME}/include/${JAVAINC} -lc -fPIC ${LIBRT} SysTime.c
-echo;echo "ClockBench.java"
-(export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH;java -Djava.library.path=. ${RDTSCP} -server -classpath . ClockBench $*)
+if [[ -z ${JAVA_HOME} ]]; then
+   echo
+   echo "Set JAVA_HOME to run Java benchmark"
+else
+   # java side
+   export PATH=$JAVA_HOME/bin:$PATH
+   rm -f SysTime.h
+   rm -f SysTime.class
+   rm -f ClockBench.class
+   rm -f libsystime.${SOEXT}
+   javac -classpath . SysTime.java
+   javah -classpath . SysTime
+   javac -classpath . ClockBench.java
+   #gcc -O3 -o libsystime.so -shared -Wl,-soname,systime.so -I${JAVA_HOME}/include -I${JAVA_HOME}/include/${JAVAINC} -lc -fPIC ${LIBRT} SysTime.c
+   gcc -O3 -o libsystime.${SOEXT} -shared -I${JAVA_HOME}/include -I${JAVA_HOME}/include/${JAVAINC} -lc -fPIC ${LIBRT} SysTime.c
+   echo;echo -n "ClockBench.java - "; java -version 2>&1 | grep "java version"
+   (export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH;java -Djava.library.path=. ${RDTSCP} -server -classpath . ClockBench $*)
+fi
