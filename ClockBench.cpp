@@ -14,41 +14,12 @@ using namespace std;
 
 #define ONE_BILLION  1000000000L
 
-// NOTE: if you change this value you prob also need to adjust later code that does "& 0xff" to use modulo arithmetic instead 
-const int BUCKETS = 256;         // how many samples to collect per iteration
+// NOTE: if you change this value you prob also need to adjust later code that does "& 0xff" to use modulo arithmetic instead
+const int BUCKETS = 1024;         // how many samples to collect per iteration
 const int ITERS = 100;           // how many iterations to run
 double CPU_FREQ = 1;
 
-inline unsigned long long cpuid_rdtsc() {
-  unsigned int lo, hi;
-  asm volatile (
-     "cpuid \n"
-     "rdtsc"
-   : "=a"(lo), "=d"(hi) /* outputs */
-   : "a"(0)             /* inputs */
-   : "%ebx", "%ecx");     /* clobbers*/
-  return ((unsigned long long)lo) | (((unsigned long long)hi) << 32);
-}
-
-inline unsigned long long rdtsc() {
-  unsigned int lo, hi;
-  asm volatile (
-     "rdtsc"
-   : "=a"(lo), "=d"(hi) /* outputs */
-   : "a"(0)             /* inputs */
-   : "%ebx", "%ecx");     /* clobbers*/
-  return ((unsigned long long)lo) | (((unsigned long long)hi) << 32);
-}
-
-inline unsigned long long rdtscp() {
-  unsigned int lo, hi;
-  asm volatile (
-     "rdtscp"
-   : "=a"(lo), "=d"(hi) /* outputs */
-   : "a"(0)             /* inputs */
-   : "%ebx", "%ecx");     /* clobbers*/
-  return ((unsigned long long)lo) | (((unsigned long long)hi) << 32);
-}
+#include "ClockBench.asm"
 
 // macro to call clock_gettime w/different values for CLOCK
 #define do_clock(CLOCK) \
@@ -56,7 +27,7 @@ do { \
    for (int i = 0; i < ITERS * BUCKETS; ++i) { \
       struct timespec x;  \
       clock_gettime(CLOCK, &x); \
-      int n = i % (BUCKETS); \
+      int n = i & (BUCKETS-1); \
       timestamp[n] = (x.tv_sec * ONE_BILLION) + x.tv_nsec; \
    } \
    deltaT x(#CLOCK, timestamp); \
@@ -169,7 +140,7 @@ int main(int argc, char** argv)
 
    {
       for (int i = 0; i < ITERS * BUCKETS; ++i) {
-         int n = i & 0xff;
+         int n = i & (BUCKETS-1);
          timestamp[n] = cpuid_rdtsc();
       }
       for (int i = 0; i < BUCKETS; ++i) {
@@ -184,7 +155,7 @@ int main(int argc, char** argv)
    #ifdef RDTSCP
    {
       for (int i = 0; i < ITERS * BUCKETS; ++i) {
-         int n = i & 0xff;
+         int n = i & (BUCKETS-1);
          timestamp[n] = rdtscp();
       }
       for (int i = 0; i < BUCKETS; ++i) {
@@ -198,7 +169,7 @@ int main(int argc, char** argv)
 
    {
       for (int i = 0; i < ITERS * BUCKETS; ++i) {
-         int n = i & 0xff;
+         int n = i & (BUCKETS-1);
          timestamp[n] = rdtsc();
       }
       for (int i = 0; i < BUCKETS; ++i) {
