@@ -41,8 +41,7 @@ else
    rm -f SysTime.class
    rm -f ClockBench.class
    rm -f libsystime.${SOEXT}
-   javac -classpath . SysTime.java
-   javah -classpath . SysTime
+   javac -classpath . -h . SysTime.java
    javac -classpath . ClockBench.java
    #gcc -O3 -o libsystime.so -shared -Wl,-soname,systime.so -I${JAVA_HOME}/include -I${JAVA_HOME}/include/${JAVAINC} -lc -fPIC ${LIBRT} SysTime.c
    gcc -O3 -o libsystime.${SOEXT} -shared -I${JAVA_HOME}/include -I${JAVA_HOME}/include/${JAVAINC} -lc -fPIC ${LIBRT} SysTime.c
